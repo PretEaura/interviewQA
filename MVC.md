@@ -11,7 +11,7 @@ MVC stands for Model-View-Controller, an architectural pattern that separates an
 The main benefit of MVC is separation of concerns, which makes applications more modular and maintainable. This division allows teams to work on different components concurrently, facilitates unit testing, and enhances scalability.
 </em>
 
-### **Interviewer:** How do you ensure that the <h6>separation of concerns</h6> is maintained in an MVC application?
+### **Interviewer:** How do you ensure that the <h4>separation of concerns</h4> is maintained in an MVC application?
 
 **Answer:**  
 Ensuring separation of concerns requires disciplined adherence to MVC principles:

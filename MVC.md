@@ -1,7 +1,5 @@
-Certainly, Preetul! Here’s a mock interview scenario with questions you might expect for a position where expertise in MVC (Model-View-Controller) architecture is essential, along with suggested answers based on your experience level.
 
----
-
+<em>
 ### **Interviewer:** Could you briefly explain MVC architecture and how it benefits application design?
 
 **Answer:**  
@@ -11,10 +9,9 @@ MVC stands for Model-View-Controller, an architectural pattern that separates an
 - **Controller**: Acts as an intermediary between the Model and View. It processes user input, updates the Model, and triggers updates in the View.
 
 The main benefit of MVC is separation of concerns, which makes applications more modular and maintainable. This division allows teams to work on different components concurrently, facilitates unit testing, and enhances scalability.
+</em>
 
----
-
-### **Interviewer:** How do you ensure that the separation of concerns is maintained in an MVC application?
+### **Interviewer:** How do you ensure that the <h6>separation of concerns</h6> is maintained in an MVC application?
 
 **Answer:**  
 Ensuring separation of concerns requires disciplined adherence to MVC principles:
@@ -26,7 +23,7 @@ Following these practices ensures components remain isolated, allowing easy debu
 
 ---
 
-### **Interviewer:** How would you handle a scenario where multiple Views need access to the same data or functionality?
+### **Interviewer:** How would you handle a scenario where <h6>multiple Views need access to the same data</h6> or functionality?
 
 **Answer:**  
 For scenarios where multiple Views require access to the same data or business logic, I employ a few patterns:

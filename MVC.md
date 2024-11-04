@@ -330,5 +330,151 @@ In this case:
 
 - 
 
+To achieve dependency injection (DI) in MVC applications, especially for a modular and testable architecture, we can follow these steps. I’ll go through how DI is implemented and used, with a focus on injecting dependencies into controllers and achieving loose coupling.
 
+---
+
+### **1. Setting Up Dependency Injection in ASP.NET Core MVC**
+
+ASP.NET Core MVC natively supports dependency injection, which simplifies configuration. Here’s how to set up DI in the `Startup.cs` file:
+
+- **Register Services**: In the `ConfigureServices` method of `Startup.cs`, you register dependencies using the `IServiceCollection`. This registration enables injecting dependencies wherever needed, such as in controllers, services, and repositories.
+
+  ```csharp
+  public class Startup
+  {
+      public void ConfigureServices(IServiceCollection services)
+      {
+          // Registering services
+          services.AddScoped<IExampleService, ExampleService>();
+          services.AddTransient<IOtherService, OtherService>();
+          
+          // Add MVC to the services collection
+          services.AddControllersWithViews();
+      }
+  }
+  ```
+
+In this example:
+- `IExampleService` and `ExampleService` are registered with a scoped lifetime, meaning a single instance per request.
+- `IOtherService` and `OtherService` are registered with a transient lifetime, creating a new instance every time it’s requested.
+
+### **2. Injecting Dependencies into Controllers (Controller DI)**
+
+By setting up DI in `Startup.cs`, ASP.NET Core MVC enables dependency injection directly into controllers. This approach avoids hard-coding dependencies, improving testability and flexibility.
+
+1. **Define the Interfaces and Implementations**:
+
+    ```csharp
+    public interface IExampleService
+    {
+        string GetData();
+    }
+
+    public class ExampleService : IExampleService
+    {
+        public string GetData() => "Hello from ExampleService!";
+    }
+    ```
+
+2. **Inject the Service into the Controller**:
+
+   In the controller, define a constructor that takes the interface as a parameter. ASP.NET Core’s DI container will automatically inject the required dependency.
+
+    ```csharp
+    public class HomeController : Controller
+    {
+        private readonly IExampleService _exampleService;
+
+        // Injecting IExampleService dependency
+        public HomeController(IExampleService exampleService)
+        {
+            _exampleService = exampleService ?? throw new ArgumentNullException(nameof(exampleService));
+        }
+
+        public IActionResult Index()
+        {
+            var data = _exampleService.GetData();
+            ViewData["Message"] = data;
+            return View();
+        }
+    }
+    ```
+
+By following this pattern:
+- **Loose Coupling**: The controller depends on an interface (`IExampleService`), not a concrete implementation. This allows swapping implementations without modifying the controller.
+- **Testability**: You can mock `IExampleService` in unit tests, making it easy to verify controller behavior without relying on the actual service logic.
+
+### **3. Registering Additional Dependencies (Repositories, Services, etc.)**
+
+If your application includes multiple layers (e.g., services, repositories), you can register these dependencies similarly. For example, if you have a repository for data access:
+
+```csharp
+public interface IProductRepository
+{
+    Product GetProductById(int id);
+}
+
+public class ProductRepository : IProductRepository
+{
+    public Product GetProductById(int id) { /* Retrieve from database */ }
+}
+```
+
+You’d register this in `Startup.cs`:
+
+```csharp
+services.AddScoped<IProductRepository, ProductRepository>();
+```
+
+And inject it into any service or controller that needs it.
+
+### **4. Benefits of DI in MVC Applications**
+
+1. **Improved Testability**: DI enables you to inject mocks or stubs for dependencies, allowing for isolated unit testing of controllers and services.
+   
+2. **Better Modularity**: Dependencies are explicitly declared, making it easier to refactor and manage changes to components.
+
+3. **Loose Coupling**: Controllers and services depend on abstractions (interfaces), not concrete implementations, allowing for flexibility in updating or replacing components.
+
+4. **Enhanced Maintainability**: With clear dependencies and well-defined interfaces, it’s easier to track and manage dependencies across the application.
+
+---
+
+### **Example: Unit Testing the Controller**
+
+With DI, unit tests can focus solely on controller logic without relying on the actual service:
+
+```csharp
+[TestClass]
+public class HomeControllerTests
+{
+    [TestMethod]
+    public void Index_ReturnsViewWithCorrectData()
+    {
+        // Arrange: Create a mock IExampleService
+        var mockService = new Mock<IExampleService>();
+        mockService.Setup(s => s.GetData()).Returns("Test Data");
+
+        var controller = new HomeController(mockService.Object);
+
+        // Act
+        var result = controller.Index() as ViewResult;
+
+        // Assert
+        Assert.IsNotNull(result);
+        Assert.AreEqual("Test Data", result.ViewData["Message"]);
+    }
+}
+```
+
+In this example:
+- **Mocking**: The `Mock<IExampleService>` allows us to define return values for the test, bypassing the actual implementation.
+- **Validation**: We can verify that the controller behaves as expected when `GetData` is called.
+
+---
+
+### **Summary**
+
+Dependency injection in ASP.NET Core MVC enables controllers and other classes to depend on abstractions, not concrete implementations. This approach provides modularity, testability, and loose coupling, making it ideal for scalable and maintainable applications.
 
